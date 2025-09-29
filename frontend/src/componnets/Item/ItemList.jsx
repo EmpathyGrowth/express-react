@@ -33,7 +33,7 @@ const ItemList = () => {
       setLoading(true);
       const res = await fetch("http://localhost:3000/items", {
         method: "POST",
-        heasder: {
+        headers: {
           "Content-Type": "application.json",
         },
         body: JSON.stringify({ name, description }),
