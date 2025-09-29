@@ -2,6 +2,9 @@
 const express = require("express"); // Importér Express framework
 const app = express(); // Opret en ny Express-app
 const PORT = 3000; // Definér porten, som serveren skal køre på
+const cors = require("cors");
+
+app.use(cors());
 
 // Middleware til at parse JSON fra request body
 app.use(express.json()); // Gør det muligt at læse JSON i POST/PUT requests

@@ -16,8 +16,10 @@ const ItemList = () => {
   const fetchItems = async () => {
     try {
       const res = await fetch("http://localhost:3000/items");
+      if (!res.ok) throw new Error("Kunne ikke hente items");
       const data = await res.json();
-      setItems(data);
+      setItems(Array.isArray(data) ? data : []);
+      setError(null);
     } catch (err) {
       console.log("Kunne ikke hente items", err);
       setError("Kunne ikke hente items");
@@ -26,25 +28,24 @@ const ItemList = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setError(null);
     setLoading(true);
 
     try {
-      setLoading(true);
       const res = await fetch("http://localhost:3000/items", {
         method: "POST",
         headers: {
-          "Content-Type": "application.json",
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ name, description }),
       });
 
-      const errorData = await res.json();
-      if (!res.ok) throw new Error(errorData.error);
+      const responseData = await res.json();
+      if (!res.ok) throw new Error(responseData.error || "Ukendt fejl");
 
       setName("");
       setDescription("");
-      setItems();
+      await fetchItems();
     } catch (err) {
       console.error("Fejl ved hentning:", err);
       setError(err.message);
@@ -59,11 +60,10 @@ const ItemList = () => {
         <form className={s.form} onSubmit={handleSubmit}>
           <input
             type="text"
-            name={name}
-            minlength="2"
-            maxlength="20"
+            name="name"
+            value={name}
             placeholder="Name"
-            onChange={(e) => setItems(e.target.value)}
+            onChange={(e) => setName(e.target.value)}
           />
 
           <textarea
@@ -72,7 +72,7 @@ const ItemList = () => {
             cols="30"
             rows="10"
             placeholder="Message"
-            onChange={(e) => setItems(e.target.value)}
+            onChange={(e) => setDescription(e.target.value)}
           ></textarea>
           <input
             type="submit"
@@ -82,12 +82,12 @@ const ItemList = () => {
         </form>
         {error && <p>{error}</p>}
       </div>
-      {items.map((i) => {
-        <div key={i.id} className="">
+      {items.map((i) => (
+        <div key={i.id}>
           <h3>{i.name}</h3>
           <p>{i.description}</p>
-        </div>;
-      })}
+        </div>
+      ))}
     </section>
   );
 };
