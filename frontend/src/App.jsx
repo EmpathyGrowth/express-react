@@ -1,5 +1,5 @@
 import "./App.css";
-import ItemList from "./componnets/Item/ItemList";
+import ItemList from "./components/Item/ItemList";
 
 function App() {
   return (
